@@ -1,0 +1,25 @@
+<settings>
+  <category label="General">
+    <setting id="domain" label="Set the domain" type="labelenum" values="9anime.to|9anime.is" default="9anime.to"/>
+    <setting id="http-type" label="Select HTTP type" type="labelenum" values="http|https" default="http"/>
+  </category>
+  <category label="User Interface">
+    <setting id="preset-quality" label="Preset quality" type="labelenum" values="Individually select|360p|480p|720p|1080p" default="Individually select"/>
+    <setting id="preset-sorting" label="Preset sorting order" type="labelenum" default="Individually select" values="Individually select|Sort by most watched|No order|Default order|Sort by recently updated|Sort by recently added|Sort by release date|Sort alphabetically|Sort by scores"/>
+    <setting id="enable-metadata" label="Enable downloading metadata, including fanart" type="bool" default="true"/>
+    <setting id="related-links" label="Enable related links; disable to enable queueing entire shows" type="bool" default="true"/>
+  </category>
+  <category label="Account">
+    <setting id="username" label="Account" type="action" option="close" action="RunPlugin(plugin://plugin.video.unofficial9anime/?action=account)"/>
+	<setting id="password" label="Password" type="text"	default=""  option="hidden"/>
+    <setting id="watch-list-type" label="Preset watch list type" type="labelenum" values="Select|All|Watching|Completed|On-hold|Dropped|Plan to watch" default="Select"/>
+    <setting id="tmdb-api-key" label="TMDB API key" type="text"/>
+  </category>
+  <category label="Debug">
+    <setting id="debug-import" label="Enable to import everything at once (affects performance)" type="bool" default="false"/>
+    <setting id="debug-timestamp" label="Enable to turn on timestampping for benchmarking functions" type="bool" default="false"/>
+    <setting id="debug-metadata-threads" label="Enable to get metadata in serial (affects performance)" type="bool" default="false"/>
+    <setting id="debug-dump-html" label="Enable to dump HTML on load failure" type="bool" default="false"/>
+	<setting id="reqkey" label="Req Key" type="text"/>
+  </category>
+</settings>

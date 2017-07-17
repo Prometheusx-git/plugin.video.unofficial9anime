@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<addon id="plugin.video.unofficial9anime" version="1.0.0" name="UP9anime" provider-name="dat1guy">
+  <requires>
+    <import addon="xbmc.python" version="2.24.0" />
+    <import addon="script.module.animemetahandler" />
+    <import addon="script.module.beautifulsoup4" />
+    <import addon="script.module.dat1guy.shared" />
+    <import addon="script.module.urlresolver" />
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">An unofficial 9anime client for Kodi</summary>
+    <description lang="en">UP9anime, aka The Unofficial Plugin for 9anime, is a 9anime client for Kodi.</description>
+    <disclaimer lang="en">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.</disclaimer>
+    <news>v1.0.0 (2017-03-26)
+Initial release!
+
+Known issues:
+- Does not support multiple servers or Openload
+- Metadata for specials is lacking
+- May not handle double episodes correctly
+- If a piece of media is not classified correctly or at all, we do not do any error correction, unlike UKAP
+- Queueing a show with related links enabled fails; disable related links as a workaround</news>
+    <platform>all</platform>
+    <language>en</language>
+    <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
+    <website>https://9anime.to</website>
+    <source>https://github.com/dat1guy/plugin.video.unofficial9anime</source>
+    <assets>
+      <icon>resources/icon.png</icon>
+      <fanart>resources/fanart.jpg</fanart>
+      <screenshot>resources/media/ScreenshotMostWatched.png</screenshot>
+      <screenshot>resources/media/ScreenshotSearch.png</screenshot>
+      <screenshot>resources/media/ScreenshotWidgetBookmarks.png</screenshot>
+      <screenshot>resources/media/ScreenshotWidgetLastVisited.png</screenshot>
+    </assets>
+  </extension>
+</addon>
