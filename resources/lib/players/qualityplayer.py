@@ -32,12 +32,11 @@ from resources.lib.common.nethelper import net, cookies
 Addon = xbmcaddon.Addon(id='plugin.video.unofficial9anime') 
 sys.path.append(os.path.join(Addon.getAddonInfo('path'), r'resources', r'lib'))
 
-if not 'nodejs' in os.environ["PATH"] :
-    os.environ["PATH"]="/storage/nodejs/bin:"+os.environ["PATH"]
+#if not 'nodejs' in os.environ["PATH"] :
+#    os.environ["PATH"]="/storage/nodejs/bin:"+os.environ["PATH"]
 
-import execjs
-#execjs.get("Node")
-execjs.eval("{a:true,b:function (){}}")
+#import execjs
+#execjs.eval("{a:true,b:function (){}}")
 
 import requests
 
@@ -101,35 +100,35 @@ class QualityPlayer(VideoPlayer):
     def __get_quality_links(self):
         # Grab the API token
         
-        token, e = self.net.get_html(helper.domain_url() +'/token?v1', self.cookies, helper.domain_url())
+        #token, e = self.net.get_html(helper.domain_url() +'/token?v1', self.cookies, helper.domain_url())
 
-        token = token.decode('utf-8')
-        token = token.split(';')[1]
-        funname = token[0]
-        token = token.replace(',0',';')		
+        #token = token.decode('utf-8')
+        #token = token.split(';')[1]
+        #funname = token[0]
+        #token = token.replace(',0',';')		
 		
-        js = 'var start=""; %s=function(mm){return start+=String.fromCharCode(mm)};' %funname#'var document = this; this.location = "https://9anime.to"; var jscookie = %s;'
-        ctx = execjs.compile(js)
-        rk1 = ctx.exec_('return '+token)
+        #js = 'var start=""; %s=function(mm){return start+=String.fromCharCode(mm)};' %funname#'var document = this; this.location = "https://9anime.to"; var jscookie = %s;'
+        #ctx = execjs.compile(js)
+        #rk1 = ctx.exec_('return '+token)
 
-        #helper.show_error_dialog(['',str(rk1)])			
+        ##helper.show_error_dialog(['',str(rk1)])			
 		
-        ck = cookielib.Cookie(version=0, name='reqkey', value=rk1, port=None, port_specified=False,
-		domain=helper.domain(), domain_specified=False, domain_initial_dot=False, 
-		path='/', path_specified=True, secure=False, expires=None, discard=False, comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False)		
+        #ck = cookielib.Cookie(version=0, name='reqkey', value=rk1, port=None, port_specified=False,
+		#domain=helper.domain(), domain_specified=False, domain_initial_dot=False, 
+		#path='/', path_specified=True, secure=False, expires=None, discard=False, comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False)		
         
         ##self.net._cj.clear(helper.domain(),'/','reqkey')
         
-        self.net._cj.set_cookie(ck)
-        self.net.save_cookies(self.cookies)
+        #self.net._cj.set_cookie(ck)
+        #self.net.save_cookies(self.cookies)
 				
-		#helper.set_setting('reqkey', reqkey)
-        #helper.show_error_dialog(['',str(rk)])	
+		##helper.set_setting('reqkey', reqkey)
+        ##helper.show_error_dialog(['',str(rk)])	
 
         ep_id = self.serverlist[self.serveridx].split('/')[-1] #args.value.split('/')[-1]        		
         ts = re.search('ts=\"(.*?)\"',self.html).group(1) 
         extra_para = self.__get_extra_url_parameter(ep_id, 0, ts)		
-	
+        #extra_para = int(extra_para) - 30	
 
         url = '%s/ajax/episode/info?ts=%s&_=%s&id=%s' % (helper.domain_url(), ts, extra_para, ep_id)
         url = url+'&update=0'
@@ -186,8 +185,7 @@ class QualityPlayer(VideoPlayer):
         o = self.__s(DD)
         for i in params:
             o += self.__s(self.__a(DD + i[0], i[1]))
-
-        return o
+        return (o - 30)
 
     def __s(self, t):
         i = 0
