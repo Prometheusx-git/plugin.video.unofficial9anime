@@ -1,3 +1,7 @@
+
+This is a fork of the UP9anime addon created from dat1guy.
+
+
 # UP9anime, aka The Unofficial Plugin for 9anime
 An unofficial 9anime client for Kodi version 16 and up, designed for the Fire Stick, Fire TV, and Windows.
 
