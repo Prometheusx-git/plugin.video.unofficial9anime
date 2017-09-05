@@ -73,10 +73,6 @@ class QualityPlayer(VideoPlayer):
 		
         i=0
 		
-        #helper.show_error_dialog(['',str(servernames)])
-        #while i < len(self.serverlist):	
-        #    servernames = servernames + self.serverlist[0]#['Server '+ str(i+1)]
-        #    i = i + 1			
         self.serveridx = helper.present_selection_dialog('Choose the server from the options below', servernames)        
 		
         #helper.show_error_dialog(['',str(self.serverlist[idx])])			
@@ -90,7 +86,11 @@ class QualityPlayer(VideoPlayer):
                 if idx != -1:
                     self.link = links[idx]['file'] 
                     redirect = requests.head( self.link , allow_redirects=True)
-                    self.link = redirect.url					
+                    self.link = redirect.url
+                    #helper.show_error_dialog(['',str(redirect.history)])
+                    if ('302' in str(redirect.history) ) :					
+                        helper.resolve_url(redirect.url)
+                        self.link = ''						
                     #helper.show_error_dialog(['',str(self.link)])
             else:
                 self.link = self.__get_best_link_for_preset_quality(links)
@@ -143,7 +143,7 @@ class QualityPlayer(VideoPlayer):
         if (ajax_json['type'] == 'iframe') : 
             target = ajax_json['target'].replace('\/','/')
             if not 'http' in target :
-                target = target.replace('//','http://')			
+                target = target.replace('//','https://')			
             self.link = target
             links = {} 			
 			#helper.show_error_dialog(['',str(target)])
@@ -185,12 +185,12 @@ class QualityPlayer(VideoPlayer):
         o = self.__s(DD)
         for i in params:
             o += self.__s(self.__a(DD + i[0], i[1]))
-        return (o - 30)
+        return o 
 
     def __s(self, t):
         i = 0
         for (e, c) in enumerate(t):
-            i += ord(c) * e + e
+            i += ord(c) * e
         return i
 
     def __a(self, t, e):
