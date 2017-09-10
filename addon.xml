@@ -18,7 +18,6 @@
 Initial release!
 
 Known issues:
-- Does not support multiple servers or Openload
 - Metadata for specials is lacking
 - May not handle double episodes correctly
 - If a piece of media is not classified correctly or at all, we do not do any error correction, unlike UKAP
