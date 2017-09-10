@@ -1,5 +1,7 @@
 
 This is a fork of the UP9anime addon created from dat1guy.
+The following text ist from the origial addon, this means there is no repo (yet).
+Other information are maybe outdated too.
 
 
 # UP9anime, aka The Unofficial Plugin for 9anime
