@@ -91,6 +91,9 @@ class QualityPlayer(VideoPlayer):
                     if ('302' in str(redirect.history) ) :					
                         helper.resolve_url(redirect.url)
                         self.link = ''						
+                    if ('https://storage.googleapis.com' and '.mp4' in str(self.link)) :
+                        helper.resolve_url(self.link)
+                        self.link = ''					
                     #helper.show_error_dialog(['',str(self.link)])
             else:
                 self.link = self.__get_best_link_for_preset_quality(links)

@@ -53,15 +53,25 @@ class EpisodeList(WebList):
         servers = self.soup.find_all('div', class_='server row')
         #server_names = map(lambda x: x.label.string, servers)       		
         				
-        links1 = servers[-2].find_all('a')
-        for link in links1:	
+        links1 = servers[-1].find_all('a')
+        links2 = servers[-2].find_all('a')
+        counter1 = len(links1)
+        counter2 = len(links2)
+
+        if (counter1 > counter2):
+            links = links1		
+            #helper.show_error_dialog(['',str(counter1)])			
+        else:
+            links = links2	
+            #helper.show_error_dialog(['',str(counter2)])			
+        for link in links:	
             link['href'] = link['href'].split('/')[-2] + '!!!!' + link['data-base']		
 
         #links2 = servers[-1].find_all('a')
         #for link in links2:	
         #    link['href'] = link['href'].split('/')[-2] + '!!!!' + link['data-base']	
 
-        self.links = links1
+        self.links = links
 			
         #helper.show_error_dialog(['',str(server)])	
 		

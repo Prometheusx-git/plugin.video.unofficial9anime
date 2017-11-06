@@ -151,9 +151,9 @@ class MediaList(WebList):
         find_or_fix = ('Find' if self.meta.is_metadata_empty(metadata, media_type) else 'Fix') + ' metadata'
         contextmenu_items.append((find_or_fix, find_metadata_context_item))
 
-        clear_metadata_query = self._construct_query(url, 'clearmetadata', metadata, name, media_type )		
-        cm_item = constants.runplugin % helper.build_plugin_url(clear_metadata_query)		
-        contextmenu_items.append(('Clear Metadata', cm_item))
+        #clear_metadata_query = self._construct_query(url, 'clearmetadata', metadata, name, media_type )		
+        #cm_item = constants.runplugin % helper.build_plugin_url(clear_metadata_query)		
+        #contextmenu_items.append(('Clear Metadata', cm_item))
 		
         id = self._get_bookmark_id(url)
         query = self._construct_query(id, 'addBookmark', metadata, name, media_type)
