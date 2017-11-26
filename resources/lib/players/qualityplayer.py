@@ -26,7 +26,7 @@
 from resources.lib.common.helper import helper
 from resources.lib.common.args import args
 from resources.lib.players.videoplayer import VideoPlayer
-import sys, re, os, cookielib, xbmcaddon
+import sys, re, os, cookielib, xbmcaddon 
 from resources.lib.common.nethelper import net, cookies
 
 Addon = xbmcaddon.Addon(id='plugin.video.unofficial9anime') 
@@ -38,7 +38,7 @@ sys.path.append(os.path.join(Addon.getAddonInfo('path'), r'resources', r'lib'))
 #import execjs
 #execjs.eval("{a:true,b:function (){}}")
 
-import requests
+#import requests
 
 class QualityPlayer(VideoPlayer):
     def __init__(self):
@@ -55,7 +55,8 @@ class QualityPlayer(VideoPlayer):
         self.soup = BeautifulSoup(self.html, "html.parser") if self.html != '' else None
 
         self.serverlist = {}
-        self.serveridx = 0		
+        self.serveridx = 0
+        self.serverid = {}		
 
     def determine_quality(self):
         helper.start('QualityPlayer.determine_quality')
@@ -63,14 +64,15 @@ class QualityPlayer(VideoPlayer):
         
         servers = self.soup.find_all('div', class_='server row')
         servernames = []       
-        i=0		
-        while i < len(servers):		
-            server = servers[i].find_all('a')
+        i=0	
+		
+        while i < len(servers):	
+            self.serverid[i] = servers[i]['data-id'] 		
+            server = servers[i].find_all('a')	
             servernames = servernames + [servers[i].find('label').get_text()]
             for link in server:
                 if (link['data-base'] == self.database): self.serverlist[i] = link['href']
-            i = i + 1				
-		
+            i = i + 1						
         i=0
 		
         self.serveridx = helper.present_selection_dialog('Choose the server from the options below', servernames)        
@@ -85,15 +87,15 @@ class QualityPlayer(VideoPlayer):
                 idx = helper.present_selection_dialog('Choose the quality from the options below', quality_options)
                 if idx != -1:
                     self.link = links[idx]['file'] 
-                    redirect = requests.head( self.link , allow_redirects=True)
-                    self.link = redirect.url
-                    #helper.show_error_dialog(['',str(redirect.history)])
-                    if ('302' in str(redirect.history) ) :					
-                        helper.resolve_url(redirect.url)
-                        self.link = ''						
-                    if ('https://storage.googleapis.com' and '.mp4' in str(self.link)) :
-                        helper.resolve_url(self.link)
-                        self.link = ''					
+                    #redirect = requests.head( self.link , allow_redirects=True)
+                    #self.link = redirect.url
+                    #helper.show_error_dialog(['',str(redirect.url)])
+                    #if ('302' in str(redirect.history) ) :					
+                    #    helper.resolve_url(redirect.url)
+                    #    self.link = ''						
+                    #if ('https://storage.googleapis.com' and '.mp4' in str(self.link)) :
+                    #    helper.resolve_url(self.link)
+                    #    self.link = ''					
                     #helper.show_error_dialog(['',str(self.link)])
             else:
                 self.link = self.__get_best_link_for_preset_quality(links)
@@ -129,14 +131,42 @@ class QualityPlayer(VideoPlayer):
         ##helper.show_error_dialog(['',str(rk)])	
 
         ep_id = self.serverlist[self.serveridx].split('/')[-1] #args.value.split('/')[-1]        		
-        ts = re.search('ts=\"(.*?)\"',self.html).group(1) 
-        extra_para = self.__get_extra_url_parameter(ep_id, 0, ts)		
-        #extra_para = int(extra_para) - 30	
+        ts_encode = re.search('ts=\"(.*?)\"',self.html).group(1) 
+        ts = self.__ts_decode(ts_encode)
 
-        url = '%s/ajax/episode/info?ts=%s&_=%s&id=%s' % (helper.domain_url(), ts, extra_para, ep_id)
+        serverid = self.serverid[self.serveridx]
+        extra_para = self.__get_extra_url_parameter(ep_id, 0, ts, serverid)	
+		
+        url = '%s/ajax/episode/info?ts=%s&_=%s&id=%s&server=%s' % (helper.domain_url(), ts, extra_para, ep_id, serverid)
         url = url+'&update=0'
-        #helper.show_error_dialog(['',str(url)])	
-        ajax_json = self.net.get_json(url, self.cookies, helper.domain_url(), {})
+        #url = 'https://9anime.is/ajax/episode/info?ts=1511679600&_=2718&id=wnzwz7&server=22&update=0'	
+        #helper.show_error_dialog(['',str(extra_para)])		
+        params_url,e = self.net.get_html(url, self.cookies, helper.domain_url())
+
+        #params_url = params_url.replace('.','')
+        #helper.show_error_dialog(['',str(params_url)])		
+        #import simplejson
+        #ajax_json = simplejson.loads(params_url)
+        ajax_json = {'params' : {'id': '', 'token': '', 'options': ''}, 'type': '', 'target': ''}
+        
+        rot8 = re.search('id\"\:\"(.*?)\"',params_url).group(1)
+        ajax_json['params']['id'] = rot8
+        rot8 = re.search('type\"\:\"(.*?)\"',params_url).group(1)		        
+        ajax_json['type'] = rot8 
+		
+        rot8 = re.search('token\"\:\"(.*?)\"',params_url)       		
+        if rot8 != None : ajax_json['params']['token'] = self.__cusb64_string(rot8.group(1)[1:])	
+	
+        rot8 = re.search('options\"\:\"(.*?)\"',params_url)		
+        if rot8 != None : ajax_json['params']['options'] = self.__cusb64_string(rot8.group(1)[1:])		
+        
+        rot8 = re.search('target\"\:\"(.*?)\"',params_url)	        
+        if rot8 != None : ajax_json['target'] = self.__cusb64_string(rot8.group(1)[1:])
+
+		
+        #helper.show_error_dialog(['',str(ajax_json)])		
+	
+        #ajax_json = self.net.get_json(url, self.cookies, helper.domain_url(), {})
 
         if helper.handle_json_errors(ajax_json):
             return []
@@ -181,10 +211,9 @@ class QualityPlayer(VideoPlayer):
         
         return url_to_play
 
-    def __get_extra_url_parameter(self, id, update, ts):
-        DD = 'gIXCaNh'
-        params = [('id', str(id)), ('update', str(update)), ('ts', str(ts))]
-
+    def __get_extra_url_parameter(self, id, update, ts, server):
+        DD = 'gIXCaNh'		
+        params = [('id', str(id)), ('update', str(update)), ('ts', str(ts)), ('server', str(server))]
         o = self.__s(DD)
         for i in params:
             o += self.__s(self.__a(DD + i[0], i[1]))
@@ -193,7 +222,7 @@ class QualityPlayer(VideoPlayer):
     def __s(self, t):
         i = 0
         for (e, c) in enumerate(t):
-            i += ord(c) * e
+            i += ord(c) * e 
         return i
 
     def __a(self, t, e):
@@ -203,6 +232,45 @@ class QualityPlayer(VideoPlayer):
             n += ord(t[i]) if i < len(t) else 0
         return format(n, 'x')  # convert n to hex string		
 		
-		
+    def __ts_decode(self,ts):
+        firstCharMap = []
+        secondCharMap = []
+        for n in range(65, 91):
+            firstCharMap.append(chr(n))
+            if n % 2 != 0:
+                secondCharMap.append(chr(n))
+        for n in range(65, 91):
+            if n % 2 == 0:
+                secondCharMap.append(chr(n))
+
+        result = ""
+        for i in range(len(ts)):
+            charReplaced = False
+            for y in range(len(secondCharMap)):
+                if ts[i] == secondCharMap[y]:
+                    result += firstCharMap[y]
+                    charReplaced = True
+                    break
+            if not charReplaced:
+                result += ts[i]
+        real_ts = result.decode('base64')
+        return real_ts
+
+    def __cusb64_string(self, content):
+        from string import ascii_lowercase as lc, ascii_uppercase as uc, maketrans	
+        _CUSB64_MAP_TABLE = [i for i in lc if ord(i) % 2 != 0] + [i for i in lc if ord(i) % 2 == 0]
+        decoded = ""
+        for c in content:
+            replaced = False
+            if c not in _CUSB64_MAP_TABLE:
+                decoded += c
+                continue
+            decoded += lc[_CUSB64_MAP_TABLE.index(c)]
+
+        missing_padding = len(decoded) % 4
+        if missing_padding:
+            decoded += b'=' * (4 - missing_padding)
+        return decoded.decode("base64")
+ 
 		
 		
