@@ -27,7 +27,6 @@ from resources.lib.lists.weblist import WebList
 import dat1guy.shared.timestamper as t_s
 from dat1guy.shared import threadpool
 
-
 class MediaList(WebList):
     '''
         Object representation of a page of shows (aka media).  Special types of pages of shows 
@@ -55,8 +54,10 @@ class MediaList(WebList):
         timestamper.stamp_and_dump()
 
     def worker(self, tuple):
-        (idx, link) = tuple
-        name, url = link.string.strip(), link['href']
+        (idx, link) = tuple					
+        name , url = link.find('img', alt=True)['alt'], link['href'] 		
+        #name, url = link.string.strip(), link['href']
+        #helper.show_error_dialog(['',str(name)])	
         metadata, media_type = self.get_metadata(name, self.media_type_list[idx])
         self.links_with_metadata[idx] = (name, url, metadata, media_type)
 
@@ -68,15 +69,19 @@ class MediaList(WebList):
         if end_dir:
             helper.set_content('tvshows')
         mlinks = self.links[:-1] if self.has_next_page else self.links
-
+        #helper.show_error_dialog(['',str(self.links)])
         # Grabbing metadata is a huge bottleneck, so grabbing it in parallel speeds up things
         self.links_with_metadata = [None] * len(mlinks)
         if helper.debug_metadata_threads():
-            map(lambda x: self.worker(x), enumerate(mlinks))#mc_links)
+            map(lambda x: self.worker(x), enumerate(mlinks))#mc_links)		
         else:
             pool = threadpool.ThreadPool(4)
             pool.map(self.worker, enumerate(mlinks))
             pool.wait_completion()
+            #for link in mlinks:
+            #    name = 	link['href'].split('/')[-1].split('.')[0].replace('-',' ')
+            #    url = link['href']				
+            #helper.show_error_dialog(['',str(name)])					
         timestamper.stamp('Grabbing metadata with threads')
         #helper.show_error_dialog(['',str(self.links_with_metadata)])
 

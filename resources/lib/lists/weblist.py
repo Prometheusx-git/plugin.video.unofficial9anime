@@ -100,20 +100,23 @@ class WebList(object):
 
     def _parse_links_from_grid(self, subcontainer_attrs=None):
         ''' 9anime often organizes a page of shows in a grid called list-film '''
-        listfilm = self.soup.find('div', class_='list-film')
+        listfilm = self.soup.find('div', class_='film-list')
+
         if subcontainer_attrs:
             listfilm = listfilm.find('div', attrs=subcontainer_attrs)
-        links = listfilm.find_all('a', class_='name')
+	
+        links = listfilm.find_all('a', class_='poster')
         data_tips = listfilm.find_all('a', class_='poster')
+        #helper.show_error_dialog(['',str(data_tips)])		
         items = listfilm.find_all('div', class_='item')
         media_type_list = []
         for item in items:
-            if item.find('div', class_='type movie'):
+            if item.find('div', class_='movie'):
                 media_type_list.append('movie')
-            elif item.find('div', class_='type ova') or item.find('div', class_='type ona') or \
-                item.find('div', class_='type special'):
+            elif item.find('div', class_='ova') or item.find('div', class_='type ona') or \
+                item.find('div', class_='special'):
                 media_type_list.append('special')
-            elif item.find('div', class_='type preview'):
+            elif item.find('div', class_='preview'):
                 media_type_list.append('preview')
             else:
                 media_type_list.append('tvshow')

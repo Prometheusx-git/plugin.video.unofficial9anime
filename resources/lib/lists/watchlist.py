@@ -61,17 +61,16 @@ class WatchList(MediaList):
     def parse(self):
         if self.soup == None:
             return
-        helper.start('WatchList.parse with list_type %s' % self.list_type)
-        watchlist_container = self.soup.find('div', class_='widget list-link watchlist').\
+        helper.start('WatchList.parse with list_type %s' % self.list_type)	
+        watchlist_container = self.soup.find('div', class_='widget watchlist').\
             find('div', attrs={'data-name':self.list_type})
         if watchlist_container == None:
             helper.end('WatchList.parse - watch list is empty')
             return
-
-        link_containers = watchlist_container.find_all('div', class_='link')
+        #helper.show_error_dialog(['',str(watchlist_container)])
+        link_containers = watchlist_container.find_all('div', class_='item '+ self.list_type)
         self.links = [container.find('a') for container in link_containers]
         self.media_type_list = ['preview'] * len(self.links)
-        #helper.show_error_dialog(['',self.list_type])	
         self._find_next_page_link()        
         helper.end('WatchList.parse')
 
@@ -109,6 +108,7 @@ class WatchList(MediaList):
                 sec = 4	
             elif (self.list_type == 'planned'): 
                 sec = 5					
+            #helper.show_error_dialog(['',str(paging_section[2])])           
             pages = paging_section[sec].find_all('a')
             for link in pages:		
             #helper.show_error_dialog(['',pages[0].get_text()])	

@@ -172,6 +172,7 @@ class Controller:
             if args.value == 'submenu_watchlist' and preset_watchlist_type == 'Select':
                 self.show_local_list()
             else:
+                #helper.show_error_dialog(['','Ping'])			
                 from resources.lib.lists.watchlist import WatchList
                 self.__show_web_list(WatchList())
         else:

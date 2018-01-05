@@ -50,11 +50,12 @@ class EpisodeList(WebList):
         if self.soup == None:
             return
 
-        servers = self.soup.find_all('div', class_='server row')
+        servers = self.soup.find_all('div', class_='widget servers')#server row')
         #server_names = map(lambda x: x.label.string, servers)       		
-        				
-        links1 = servers[-1].find_all('a')
-        links2 = servers[-2].find_all('a')
+        links_active =	servers[0].find_all('div', class_='server active')
+        links_hidden =	servers[0].find_all('div', class_='server hidden')
+        links1 = links_active[0].find_all('a')
+        links2 = links_hidden[-1].find_all('a')#servers[-2].find_all('a')
         counter1 = len(links1)
         counter2 = len(links2)
 
@@ -63,10 +64,10 @@ class EpisodeList(WebList):
             #helper.show_error_dialog(['',str(counter1)])			
         else:
             links = links2	
-            #helper.show_error_dialog(['',str(counter2)])			
+        #helper.show_error_dialog(['',str(links2)])			
         for link in links:	
             link['href'] = link['href'].split('/')[-2] + '!!!!' + link['data-base']		
-
+            #helper.show_error_dialog(['',str(link)])
         #links2 = servers[-1].find_all('a')
         #for link in links2:	
         #    link['href'] = link['href'].split('/')[-2] + '!!!!' + link['data-base']	
@@ -138,20 +139,24 @@ class EpisodeList(WebList):
 
     def _parse_show_metadata(self):
         # A bunch of show metadata is organized in a table
-        metadata_table = self.soup.find('div', id='info').find('dl', class_='meta col-sm-12')
+        metadata_table = self.soup.find('div', class_='widget info').find('dl', class_='meta col-sm-12')
         values = metadata_table.find_all('dd')
-        self.genres = map(lambda x: x.string, values[2].find_all('a'))
-        raw_first_air_date = values[4].string.split(' to ')[0].strip()
+        #helper.show_error_dialog(['',str(values)])			
+        self.genres = map(lambda x: x.string, values[4].find_all('a'))
+        raw_first_air_date = values[2].string.split(' to ')[0].strip()
         self.first_air_date = helper.get_datetime(raw_first_air_date, '%b %d, %Y').strftime("%Y-%m-%d")
         
         media_type_table = {
             u'TV Series': 'tvshow', u'Movie': 'movie', u'OVA': 'special', u'ONA': 'special', u'Special': 'special'
         }
-        self.media_type = media_type_table[values[1].string]
+        self.media_type = media_type_table[values[0].string]        
 
         # Only keep aliases that do not contain CJK (eg, Japanese) characters
         try:
-            tmp_aliases = values[0].string.split('; ')
+            #tmp_aliases = values[0].string.split('; ')
+            alias1 = self.soup.find('div', class_='widget info').find('p', class_='alias')
+            tmp_aliases = str(alias1).replace('<p class="alias">','').replace('</p>','')			
+            tmp_aliases = tmp_aliases.split('; ')				
             keep_fn = lambda x: ord(x) <= 3000
             self.aliases = filter(lambda y: filter(keep_fn, y), tmp_aliases)
         except:

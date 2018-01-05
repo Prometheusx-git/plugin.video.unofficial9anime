@@ -92,12 +92,13 @@ class Account(object):
 
     ''' PRIVATE FUNCTIONS '''
     def __login(self, username, password):
-        url = helper.domain_url() + '/user/login'
+        url = helper.domain_url() + '/user/ajax/login'
         form_data = {'username': username, 'password': password, 'remember': 1}
         json = self.net.get_json(url, self.cookies, helper.domain_url(), form_data)
         helper.log_debug('login response: %s' % json)
+        #helper.show_error_dialog(['',str(json)])
 
-        if helper.handle_json_errors(json) or json.get('result', False) == False:
+        if helper.handle_json_errors(json) or json.get('success', False) == False:
             return False
 
         helper.set_setting('username', username)
