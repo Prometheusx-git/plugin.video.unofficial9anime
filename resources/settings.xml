@@ -1,6 +1,6 @@
 <settings>
   <category label="General">
-    <setting id="domain" label="Set the domain" type="labelenum" values="9anime.to|9anime.is" default="9anime.to"/>
+    <setting id="domain" label="Set the domain" type="labelenum" values="9anime.to|9anime.is|9anime.ch" default="9anime.to"/>
     <setting id="http-type" label="Select HTTP type" type="labelenum" values="http|https" default="http"/>
   </category>
   <category label="User Interface">

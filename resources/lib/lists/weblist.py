@@ -106,7 +106,7 @@ class WebList(object):
             listfilm = listfilm.find('div', attrs=subcontainer_attrs)
 	
         links = listfilm.find_all('a', class_='poster')
-        data_tips = listfilm.find_all('a', class_='poster')
+        data_tips = links #listfilm.find_all('a', class_='poster')
         #helper.show_error_dialog(['',str(data_tips)])		
         items = listfilm.find_all('div', class_='item')
         media_type_list = []
