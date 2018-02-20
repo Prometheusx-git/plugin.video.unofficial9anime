@@ -66,15 +66,13 @@ class EpisodeList(WebList):
             links = links2	
         #helper.show_error_dialog(['',str(links2)])			
         for link in links:	
-            link['href'] = link['href'].split('/')[-2] + '!!!!' + link['data-base']		
+            link['href'] = '%s!!!!%s' % (link['href'].split('/')[-2], link['data-base']	)	
             #helper.show_error_dialog(['',str(link)])
         #links2 = servers[-1].find_all('a')
         #for link in links2:	
         #    link['href'] = link['href'].split('/')[-2] + '!!!!' + link['data-base']	
 
-        self.links = links
-			
-        #helper.show_error_dialog(['',str(server)])	
+        self.links = links			
 		
         self._parse_show_metadata()
         self.related_links, self.related_data_tips, self.related_media_type_list = self._parse_links_from_grid()

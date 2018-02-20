@@ -23,7 +23,9 @@
 from resources.lib.common import constants
 from resources.lib.common.args import args
 from resources.lib.common.helper import helper
-
+from resources.lib.metadata import metadatahandler
+from resources.lib.common import nethelper
+from bs4 import BeautifulSoup
 
 class WebList(object):
     '''
@@ -42,9 +44,8 @@ class WebList(object):
         self.links = []
         self.has_next_page = False
 
-        from resources.lib.metadata import metadatahandler
+
         self.meta = metadatahandler.meta
-        from resources.lib.common import nethelper
         self.net, self.cookies = nethelper.net, nethelper.cookies
 
         if not url_val:
@@ -54,8 +55,7 @@ class WebList(object):
         self.html, e = self.net.get_html(self.url, self.cookies, helper.domain_url(), form_data)
         self.html = helper.handle_html_errors(self.html, e)
         helper.log_debug('HTML length: %s' % len(self.html))
-        
-        from bs4 import BeautifulSoup
+ 
         self.soup = BeautifulSoup(self.html, "html.parser") if self.html != '' else None
 
     def parse(self):
