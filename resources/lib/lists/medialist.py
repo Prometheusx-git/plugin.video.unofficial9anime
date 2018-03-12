@@ -25,7 +25,9 @@ from resources.lib.common.args import args
 from resources.lib.common.helper import helper
 from resources.lib.lists.weblist import WebList
 import dat1guy.shared.timestamper as t_s
-from dat1guy.shared import threadpool
+#from dat1guy.shared import threadpool
+
+from multiprocessing.dummy import Pool as ThreadPool 
 
 class MediaList(WebList):
     '''
@@ -54,13 +56,13 @@ class MediaList(WebList):
         timestamper.stamp_and_dump()
 
     def worker(self, tuple):
-        (idx, link) = tuple					
+        (idx, link) = tuple				
         name , url = link.find('img', alt=True)['alt'], link['href'] 		
         #name, url = link.string.strip(), link['href']
         #helper.show_error_dialog(['',str(name)])	
         metadata, media_type = self.get_metadata(name, self.media_type_list[idx])
         self.links_with_metadata[idx] = (name, url, metadata, media_type)
-
+	
     def add_items(self, title_prefix=None):
         helper.start('MediaList.add_items')
         timestamper = t_s.TimeStamper('MediaList.add_items')
@@ -75,13 +77,16 @@ class MediaList(WebList):
         if helper.debug_metadata_threads():
             map(lambda x: self.worker(x), enumerate(mlinks))#mc_links)		
         else:
-            pool = threadpool.ThreadPool(4)
+            #pool = threadpool.ThreadPool(4)
+            #pool.map(self.worker, enumerate(mlinks))
+            #pool.wait_completion()
+            #helper.show_error_dialog(['',str(mlinks[0])])			
+            #helper.show_error_dialog(['',str(self.media_type_list)])		
+            pool = ThreadPool(8) # Sets the pool size to 4			
             pool.map(self.worker, enumerate(mlinks))
-            pool.wait_completion()
-            #for link in mlinks:
-            #    name = 	link['href'].split('/')[-1].split('.')[0].replace('-',' ')
-            #    url = link['href']				
-            #helper.show_error_dialog(['',str(name)])					
+            pool.close() 
+            pool.join() 			
+						
         timestamper.stamp('Grabbing metadata with threads')
         #helper.show_error_dialog(['',str(self.links_with_metadata)])
 

@@ -86,14 +86,11 @@ class QualityPlayer(VideoPlayer):
         else:
             links_active =	servers.find_all('div', class_='server hidden')
             #helper.show_error_dialog(['',str(links_active)])
-            if (self.serveridx == 1):            
-                links1 = links_active[0].find_all('a')			
-                for link in links1:
-                   if (link['data-base'] == self.database): self.serverlist = link['href']	
-            if (self.serveridx == 2):   		
-                links1 = links_active[-1].find_all('a')			
-                for link in links1:
-                   if (link['data-base'] == self.database): self.serverlist = link['href']			
+        #    if (self.serveridx == 1):            
+            links1 = links_active[self.serveridx-1].find_all('a')			
+            for link in links1:
+               if (link['data-base'] == self.database): self.serverlist = link['href']	
+		
         #helper.show_error_dialog(['',str(self.serverlist[idx])])			
 
         links = {} 		
@@ -122,7 +119,7 @@ class QualityPlayer(VideoPlayer):
 
         ep_id = self.serverlist.split('/')[-1]        		
         ts = re.search('ts=\"(.*?)\"',self.html).group(1) 		
-        extra_para = self.__get_extra_url_parameter(ep_id, 0, ts, self.serverid)	
+        extra_para = self.__get_extra_url_parameter(ep_id, ts, self.serverid)	
         
 		#url = '%s/ajax/episode/info?id=%s&server=%s' % (helper.domain_url(), ep_id, serverid)
         url = '%s/ajax/episode/info?ts=%s&_=%s&id=%s&server=%s' % (helper.domain_url(), ts, extra_para, ep_id, self.serverid)
@@ -159,9 +156,11 @@ class QualityPlayer(VideoPlayer):
             if 'rapidvideo' in target :
                 params_url,e = self.net.get_html( '%s&q=360p' % target, self.cookies, helper.domain_url())
                 quali = re.findall(r'&q=(.*?)"',params_url)
-                quali_choser = helper.present_selection_dialog('Choose the quality from the options below', quali)  
+                quali = quali[::-1]				
+                quali_choser = helper.present_selection_dialog('Choose the quality from the options below', quali) 
                 if ( quali_choser != -1):		
                     params_url,e = self.net.get_html('%s&q=' % target + quali[quali_choser], self.cookies, helper.domain_url())				
+                    #helper.show_error_dialog(['',str(quali)])	
                     target = re.search('<source\ssrc=\"([^\"]+)\"\s.+title=\"([^\"]+)\"\s.+?>', params_url).group(1)
                     #helper.show_error_dialog(['',str(target)])					
                     helper.resolve_url(target)
@@ -214,9 +213,10 @@ class QualityPlayer(VideoPlayer):
 
 	#Part from DxCx/plugin.video.9anime taken
 
-    def __get_extra_url_parameter(self, id, update, ts, server):
+    def __get_extra_url_parameter(self, id, ts, server):
         DD = 'iQDWcsGqN'		
         params = [('id', str(id)), ('ts', str(ts)), ('server', str(server))]
+
         o = self.__s(DD)
         for i in params:
             o += self.__s(self.__a(DD + i[0], i[1]))

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<addon id="plugin.video.unofficial9anime" version="1.0.7" name="UP9anime" provider-name="dat1guy">
+<addon id="plugin.video.unofficial9anime" version="1.0.8" name="UP9anime" provider-name="dat1guy">
   <requires>
     <import addon="xbmc.python" version="2.24.0" />
     <import addon="script.module.animemetahandler" />

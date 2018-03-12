@@ -23,7 +23,7 @@
 from resources.lib.common import constants
 from resources.lib.common.helper import helper
 from resources.lib.common.args import args
-
+import re
 
 class Account(object):
     '''
@@ -33,6 +33,11 @@ class Account(object):
         from resources.lib.common.nethelper import net, cookies
         self.net, self.cookies = net, cookies
 
+        self.html = ''
+        self.html, e = self.net.get_html(helper.domain_url() , self.cookies, helper.domain_url())
+        #self.html = helper.handle_html_errors(self.html, e)
+		
+		
     ''' PUBLIC FUNCTIONS '''
     def log_in_saved(self):    
         username = helper.get_setting('username')	
@@ -92,8 +97,16 @@ class Account(object):
 
     ''' PRIVATE FUNCTIONS '''
     def __login(self, username, password):
-        url = helper.domain_url() + '/user/ajax/login'
+        #url = helper.domain_url() + '/user/ajax/login'
         form_data = {'username': username, 'password': password, 'remember': 1}
+	
+        ts = re.search('ts=\"(.*?)\"',self.html).group(1)
+        url_base = re.search('href=\"(.*?)\"',self.html).group(1) 			
+        
+        extra_para = self.__get_extra_url_parameter(username,password,ts) #1673
+        url = '%s/user/ajax/login?ts=%s&_=%s' % (url_base, ts, extra_para )
+        
+        #helper.show_error_dialog(['',str(extra_para)])			
         json = self.net.get_json(url, self.cookies, helper.domain_url(), form_data)
         helper.log_debug('login response: %s' % json)
         #helper.show_error_dialog(['',str(json)])
@@ -123,3 +136,25 @@ class Account(object):
 
         helper.show_small_popup(msg=msg)
         helper.refresh_page()
+
+		
+    def __get_extra_url_parameter(self, username, password, ts):
+        DD = 'iQDWcsGqN'		
+        params = [('username', str(username)), ('password', str(password)),('remember', '1'), ('ts', str(ts))]
+        o = self.__s(DD)
+        for i in params:
+            o += self.__s(self.__a(DD + i[0], i[1]))
+        return o 
+
+    def __s(self, t):
+        i = 0
+        for (e, c) in enumerate(t):
+            i += ord(c) + e 
+        return i
+
+    def __a(self, t, e):
+        n = 0
+        for i in range(max(len(t), len(e))):
+            n += ord(e[i]) if i < len(e) else 0
+            n += ord(t[i]) if i < len(t) else 0
+        return format(n, 'x')  # convert n to hex string		

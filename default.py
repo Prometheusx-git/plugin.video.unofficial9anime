@@ -18,8 +18,12 @@
     You should have received a copy of the GNU General Public License
     along with UP9anime.  If not, see <http://www.gnu.org/licenses/>.
 '''
+#import cProfile
 
-
+####cProfiler Start
+#pr = cProfile.Profile()
+#pr.enable()
+	
 import time
 t_start = time.time()
 
@@ -70,3 +74,8 @@ else:
 
 helper.location("Default exit point")
 timestamper.stamp_and_dump('All non-imported execution')
+
+###cProfiler End
+#pr.disable()
+#pr.print_stats(sort='time')
+#pr.dump_stats('/storage/.kodi/addons/plugin.video.unofficial9anime/stats.dmp')
