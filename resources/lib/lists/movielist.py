@@ -63,6 +63,11 @@ class MovieList(EpisodeList):
             # for now, assume media_type is always movie; ignore self.mismatch
             metadata = self.get_metadata(args.base_title)
             query = self._construct_query(url, 'qualityPlayer', metadata)
+            #if helper.get_setting('enable-metadata') == 'true':			
+            #    metadata['title'] = '%s - %s' % (name, metadata['title'])
+            if (query['base_title'] == ''):
+                query['base_title'] = args.base_title
+            #helper.show_error_dialog(['',str(query)])	            			
             helper.add_video_item(query, metadata, img=args.icon, fanart=args.fanart, contextmenu_items=self._get_contextmenu_items())
 
         self._add_related_links()
