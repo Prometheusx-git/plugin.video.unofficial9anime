@@ -108,6 +108,7 @@ class EpisodeList(WebList):
             cm_items = self._get_contextmenu_items()
             if helper.get_setting('enable-metadata') == 'true':			
                 metadata['title'] = '%s - %s' % (name, metadata['title'])
+            #helper.show_error_dialog(['',str(query)])					
             helper.add_video_item(query, metadata, img=icon, fanart=fanart, contextmenu_items=cm_items)
 
         self._add_related_links()
@@ -139,15 +140,28 @@ class EpisodeList(WebList):
         # A bunch of show metadata is organized in a table
         metadata_table = self.soup.find('div', class_='widget info').find('dl', class_='meta col-sm-12')
         values = metadata_table.find_all('dd')
-        #helper.show_error_dialog(['',str(values)])			
-        self.genres = map(lambda x: x.string, values[4].find_all('a'))
-        raw_first_air_date = values[2].string.split(' to ')[0].strip()
-        self.first_air_date = helper.get_datetime(raw_first_air_date, '%b %d, %Y').strftime("%Y-%m-%d")
-        
+        #helper.show_error_dialog(['',str(values[4])])			
+
         media_type_table = {
             u'TV Series': 'tvshow', u'Movie': 'movie', u'OVA': 'special', u'ONA': 'special', u'Special': 'special'
         }
+
         self.media_type = media_type_table[values[0].string]        
+
+        if 	(self.media_type == 'movie' ):	
+            try:		
+                self.genres = map(lambda x: x.string, values[3].find_all('a')) #3 Movie
+            except:
+                self.genres = map(lambda x: x.string, values[2].find_all('a')) #3 Movie                				          
+            try:
+			    raw_first_air_date = values[1].string.split(' to ')[0].strip() #1 Movie
+            except:
+			    raw_first_air_date = values[2].string.split(' to ')[0].strip() #1 Movie			
+
+        else:     
+            self.genres = map(lambda x: x.string, values[4].find_all('a')) #3 Movie
+            raw_first_air_date = values[2].string.split(' to ')[0].strip() #1 Movie
+        self.first_air_date = helper.get_datetime(raw_first_air_date, '%b %d, %Y').strftime("%Y-%m-%d")        	 	 
 
         # Only keep aliases that do not contain CJK (eg, Japanese) characters
         try:
