@@ -8,7 +8,7 @@ This is a fork of the UP9anime addon originally created by dat1guy.
  - [Known Issues](#known-issues)
 
 ## Installation
-Download the repo from [here](https://github.com/Prometheusx-git/repository.unofficial9anime/master/repository.unofficial9anime).  DO NOT install the add-on using the green button above, as this add-on requires dependencies only found in the repository.
+Download the repo from [here](https://raw.githubusercontent.com/Prometheusx-git/repository.unofficial9anime/master/repository.unofficial9anime).  DO NOT install the add-on using the green button above, as this add-on requires dependencies only found in the repository.
 
 Once the repository is installed to Kodi, install the add-on from the repository from within Kodi.
 
