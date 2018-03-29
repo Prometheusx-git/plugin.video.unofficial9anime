@@ -13,7 +13,7 @@
     <setting id="username" label="Account" type="action" option="close" action="RunPlugin(plugin://plugin.video.unofficial9anime/?action=account)"/>
 	<setting id="password" label="Password" type="text"	default=""  option="hidden"/>
     <setting id="watch-list-type" label="Preset watch list type" type="labelenum" values="Select|All|Watching|Completed|On-hold|Dropped|Plan to watch" default="Select"/>
-    <setting id="tmdb-api-key" label="TMDB API key" type="text"/>
+    <setting id="tmdb-api-key" label="TMDB API key" type="text" default="2ab10ff6afda491d22e70604dbdc6442"/>
   </category>
   <category label="Debug">
     <setting id="debug-import" label="Enable to import everything at once (affects performance)" type="bool" default="false"/>
