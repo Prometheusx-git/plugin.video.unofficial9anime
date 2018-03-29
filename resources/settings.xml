@@ -1,7 +1,7 @@
 <settings>
   <category label="General">
     <setting id="domain" label="Set the domain" type="labelenum" values="9anime.to|9anime.is" default="9anime.is"/>
-    <setting id="http-type" label="Select HTTP type" type="labelenum" values="http|https" default="http"/>
+    <setting id="http-type" label="Select HTTP type" type="labelenum" values="https" default="https"/>
   </category>
   <category label="User Interface">
     <setting id="preset-quality" label="Preset quality" type="labelenum" values="Individually select|360p|480p|720p|1080p" default="Individually select"/>

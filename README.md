@@ -1,25 +1,16 @@
 
-This is a fork of the UP9anime addon created from dat1guy.
-The following text ist from the origial addon, this means there is no repo (yet).
-Other information are maybe outdated too.
-
 # UP9anime, aka The Unofficial Plugin for 9anime
 An unofficial 9anime client for Kodi version 16 and up, designed for the Fire Stick, Fire TV, and Windows.
+This is a fork of the UP9anime addon originally created by dat1guy.
 
  - [Installation](#installation)
- - [Overview and Motivation](#overview-and-motivation)
  - [Features](#features)
  - [Known Issues](#known-issues)
- - [Future Plans](#future-plans)
 
 ## Installation
-Download the repo from [here](https://github.com/dat1guy/dat1guyRepository).  DO NOT install the add-on using the green button above, as this add-on requires dependencies only found in the repository.
+Download the repo from [here](https://github.com/Prometheusx-git/repository.unofficial9anime).  DO NOT install the add-on using the green button above, as this add-on requires dependencies only found in the repository.
 
 Once the repository is installed to Kodi, install the add-on from the repository from within Kodi.
-
-## Overview and Motivation
-
-This plugin is a re-worked [UKAP](https://github.com/dat1guy/UnofficialKissanime) for the [9anime website](http://9anime.to).  Please see the [Overview section for UKAP for more information](https://github.com/dat1guy/UnofficialKissanime/blob/master/README.md#overview-and-motivation).
 
 ## Features
 ### Enhanced metadata support
@@ -36,7 +27,7 @@ Users can browse the plugin in a similar fashion to the 9anime website, which in
 Users can search for shows in the plugin.
 
 ### Account watch list
-Users can log in to their accounts and browse and modify their watch list, including individual folders.  Users can also preset the folder to view in the settings.  The username and password are not saved at all by the plugin.
+Users can log in to their accounts and browse and modify their watch list, including individual folders.  Users can also preset the folder to view in the settings.
 
 ### Last show visited
 Users can see the last show they visited from the main menu, for quick access for continuing a series.
@@ -58,9 +49,3 @@ Widgets in supported skins can be populated with any page of the plugin (except 
  - Metadata support for specials and OVAs is lackluster.
  - Queueing a show when related links are enabled results in an infinite loop.  This cannot be fixed, but a workaround is available by disabling related links in the settings.
 
-## Future Plans
-In no particular order:
- - Sync watched status with the 9anime website for logged-in users
- - Investigate possible Trakt integration
- - Add a "Go to page" option for submenus under Browse
- - Add support for selecting videos from different servers or Openload.
