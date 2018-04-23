@@ -102,8 +102,9 @@ class Account(object):
 	
         ts = re.search('ts=\"(.*?)\"',self.html).group(1)
         url_base = re.search('href=\"(.*?)\"',self.html).group(1) 			
-        
-        extra_para = self.__get_extra_url_parameter(username,password,ts) #1673
+
+        params = [('username', str(username)), ('password', str(password)),('remember', '1'), ('ts', str(ts))]        
+        extra_para = self.__get_extra_url_parameter(params) #1673
         url = '%s/user/ajax/login?ts=%s&_=%s' % (url_base, ts, extra_para )
         
         #helper.show_error_dialog(['',str(extra_para)])			
@@ -126,8 +127,15 @@ class Account(object):
         str1 = 'add the show to' if add else 'remove the show from'
         str2 = 'added the show to' if add else 'removed the show from'
 
-        url = '%s/user/ajax/edit-watchlist?folder=%s&id=%s&Q=1' % (helper.domain_url(), folder, args.value)
+        ts = re.search('ts=\"(.*?)\"',self.html).group(1)
+        url_base = re.search('href=\"(.*?)\"',self.html).group(1) 		
+		
+        params = [('folder', str(folder)), ('id', str(args.value)),('random', '1'), ('ts', str(ts))]        
+        extra_para = self.__get_extra_url_parameter(params) #1673
+        url = '%s/user/ajax/edit-watchlist?ts=%s&_=%s&folder=%s&id=%s&random=1' % (url_base, ts, extra_para, folder, args.value)
+	
         json = self.net.get_json(url, self.cookies, helper.domain_url())
+        #helper.show_error_dialog(['',str(json)])
         # returns status == False on failure
         if helper.handle_json_errors(json) or json.get('status', False) == False:
             msg = 'Failed to %s the %s list' % (str1, list_str)
@@ -138,9 +146,9 @@ class Account(object):
         helper.refresh_page()
 
 		
-    def __get_extra_url_parameter(self, username, password, ts):
+    def __get_extra_url_parameter(self, params):
         DD = 'iQDWcsGqN'		
-        params = [('username', str(username)), ('password', str(password)),('remember', '1'), ('ts', str(ts))]
+        #params = [('username', str(username)), ('password', str(password)),('remember', '1'), ('ts', str(ts))]
         o = self.__s(DD)
         for i in params:
             o += self.__s(self.__a(DD + i[0], i[1]))
