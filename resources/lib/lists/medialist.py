@@ -93,7 +93,7 @@ class MediaList(WebList):
         try:		
             for (name, url, metadata, media_type) in self.links_with_metadata:
                 icon, fanart = self._get_art_from_metadata(metadata)
-                query = self._construct_query(url, 'episodeList', metadata, name, media_type)
+                query = self._construct_query(url, 'episodeList', metadata, name, media_type)		
                 contextmenu_items = self._get_contextmenu_items(url, name, metadata, media_type)
                 metadata['title'] = title_prefix + name # adjust title for sub and dub
                 helper.add_directory(query, metadata, img=icon, fanart=fanart, contextmenu_items=contextmenu_items, total_items=len(mlinks))
@@ -173,16 +173,21 @@ class MediaList(WebList):
         return contextmenu_items
 
     def _find_next_page_link(self):        
-        paging_section = self.soup.find('div', class_='paging')
+        paging_section = self.soup.find('div', class_='paging-wrapper')
+		
         if paging_section != None:
-            next_page_link = paging_section.find('a', class_='btn btn-lg btn-primary pull-right ')
+            next_page_link = paging_section.find_all('a', class_='btn btn-lg btn-primary pull-right ')#btn btn-lg btn-primary pull-left disabled')
+            #helper.show_error_dialog(['',str(next_page_link)])	
             if next_page_link:
                 self.links.append(next_page_link)
                 self.has_next_page = True
-
+				
     def _add_next_page_link(self, list_type='mediaList'):
         if self.has_next_page:
-            next_link = '/%s' % self.links[-1]['href']
-            query = self._construct_query(next_link, list_type)
-            helper.add_directory(query, {'title': 'Next'})
+            pages = self.links[-1]#.find_all('a')			
+            for link in pages:		
+                next_link = '/%s' % link["href"]
+                #helper.show_error_dialog(['',str(link["href"])])	
+                query = self._construct_query(next_link, list_type)
+                helper.add_directory(query, {'title': 'Next'})
 

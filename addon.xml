@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<addon id="plugin.video.unofficial9anime" version="1.0.8" name="UP9anime" provider-name="PrometheusX">
+<addon id="plugin.video.unofficial9anime" version="1.0.9" name="UP9anime" provider-name="PrometheusX">
   <requires>
     <import addon="xbmc.python" version="2.24.0" />
     <import addon="script.module.animemetahandler" />
@@ -14,7 +14,9 @@
     <summary lang="en">An unofficial 9anime client for Kodi</summary>
     <description lang="en">UP9anime, aka The Unofficial Plugin for 9anime, is a 9anime client for Kodi.</description>
     <disclaimer lang="en">The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.</disclaimer>
-    <news>
+    <news>v1.0.0 (2017-03-26)
+Initial release!
+
 Known issues:
 - Metadata for specials is lacking
 - May not handle double episodes correctly

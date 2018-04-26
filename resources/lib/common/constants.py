@@ -63,7 +63,7 @@ submenu_browse = [
     ('Trending', {'value':'/', 'action':'trendingList'}),
     ('Last updated', {'value':'/filter?sort=episode_last_added_at', 'action':'mediaList'}),
     ('Newest', {'value':'/filter?sort=release_date', 'action':'mediaList'}),
-    ('Upcoming', {'value':'/upcoming', 'action':'upcomingList'}),
+    #('Upcoming', {'value':'/upcoming', 'action':'upcomingList'}),
     ('Year', {'value':'submenu_year', 'action':'localList'}),
     ('Genre', {'value':'submenu_genres', 'action':'localList'}),
     ('Movies', {'value':'/filter?type%5B%5D=movie', 'action':'sortList'}),

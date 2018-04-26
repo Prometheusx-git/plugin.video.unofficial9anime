@@ -30,10 +30,14 @@ class UpcomingList(MediaList):
     '''
     ''' PUBLIC FUNCTIONS '''
     def parse(self):
-        link_containers = self.soup.find('div', class_='widget list-film-vertical').\
-            find_all('div', class_='name')
-        self.links = [container.find('a') for container in link_containers]
-        self.media_type_list = ['preview'] * len(self.links)
+        link_containers = self.soup.find('div', class_='mt-md film-list-vertical')#.\
+            #find_all('div', class_='name')
+        items = link_containers.find_all('a', class_='name')
+        self.links = items
+        #self.media_type_list = ['preview'] * len(self.links)		
+        #helper.show_error_dialog(['',str(items)])				
+        #self.links = [container.find('a') for container in link_containers]
+        #self.media_type_list = ['preview'] * len(self.links)
         self._find_next_page_link()
 
     ''' PROTECTED FUNCTIONS '''

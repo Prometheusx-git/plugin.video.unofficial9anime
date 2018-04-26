@@ -102,8 +102,8 @@ class Controller:
             from resources.lib.lists.movielist import MovieList
             l = MovieList()
         elif args.media_type == 'special':
-            from resources.lib.lists.specialslist import SpecialsList
-            l = SpecialsList()
+            from resources.lib.lists.episodelist import EpisodeList #from resources.lib.lists.specialslist import SpecialsList
+            l = EpisodeList() #SpecialsList()
         else:
             # media_type == 'preview', which means we don't know media type
             from resources.lib.lists.episodelist import EpisodeList

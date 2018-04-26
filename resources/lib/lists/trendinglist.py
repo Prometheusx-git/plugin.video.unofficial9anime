@@ -33,6 +33,6 @@ class TrendingList(MediaList):
         if self.soup == None:
             return
         helper.start('TrendingList.parse')
-        attrs = {'data-name': 'top-week'}
+        attrs = {'data-name': 'trending'}
         self.links, self.data_tips, self.media_type_list = self._parse_links_from_grid(attrs)
         helper.end('TrendingList.parse')        

@@ -161,8 +161,7 @@ class QualityPlayer(VideoPlayer):
                 if ( quali_choser != -1):		
                     params_url,e = self.net.get_html('%s&q=' % target + quali[quali_choser], self.cookies, helper.domain_url())				
                     #helper.show_error_dialog(['',str(quali)])	
-                    target = re.search('<source\ssrc=\"([^\"]+)\"\s.+title=\"([^\"]+)\"\s.+?>', params_url).group(1)
-                    #helper.show_error_dialog(['',str(target)])					
+                    target = re.search('<source\ssrc=\"([^\"]+)\"\s.+title=\"([^\"]+)\"\s.+?>', params_url).group(1)				
                     helper.resolve_url(target)
                 target = ''
             if 'mcloud.to' in target :
