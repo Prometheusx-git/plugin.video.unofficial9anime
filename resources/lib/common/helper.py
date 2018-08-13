@@ -67,7 +67,6 @@ class Helper(shared_helper.Helper):
         else:
             helper.show_error_dialog(['JSON request failed.', '', ('Error details: %s' % error)])
 
-        return True
-
-
+        return True    
+		
 helper = __init()

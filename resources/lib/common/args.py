@@ -30,7 +30,7 @@ def __init():
 class Args(object):
     '''
         A wrapper around the parameters to the add-on.
-    '''
+    '''	
     def __init__(self):
         params = dict(helper.queries)
         helper.location('Here are the params: %s' % str(params))

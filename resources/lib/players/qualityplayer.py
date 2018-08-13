@@ -27,7 +27,7 @@ from resources.lib.common.helper import helper
 from resources.lib.common.args import args
 from resources.lib.players.videoplayer import VideoPlayer
 from resources.lib.common.nethelper import net, cookies
-import sys, re, os, cookielib, xbmcaddon 
+import sys, re, os, cookielib, xbmcaddon, xbmcvfs, xbmcgui 
 
 from bs4 import BeautifulSoup
 
@@ -53,43 +53,61 @@ class QualityPlayer(VideoPlayer):
         self.html, e = self.net.get_html(helper.domain_url() + self.url, self.cookies, helper.domain_url())
         self.html = helper.handle_html_errors(self.html, e)
      
-        self.soup = BeautifulSoup(self.html, "html.parser") if self.html != '' else None
+        #self.soup = BeautifulSoup(self.html, "html.parser") if self.html != '' else None
 
-        self.serverlist = {}
+        self.serverlink = ''
         self.serveridx = 0
         self.serverid = 28		
+		
+        #serverlistf = helper.get_profile() + 'serverlist.txt'		
+        #serverlistfile = xbmcvfs.File(serverlistf)
+        #self.serverlist = serverlistfile.read()
+        #serverlistfile.close()		
+        self.serverlist = xbmcgui.Window(10000).getProperty('serverlist')				
 
     def determine_quality(self):
         #helper.start('QualityPlayer.determine_quality')
-        #helper.show_error_dialog(['',str(args.value)])
+        #helper.show_error_dialog(['',str(self.url)])
         
-        servers = self.soup.find('div', class_='widget servers')#server row')
-
-        serverinfo = servers.find('span', class_='tabs')#['data-name']		
-        servernames = re.findall(r'data-name="(.*?)">(.*?)<', str(serverinfo))
+        #servers = self.soup.find('div', class_='widget servers')#server row')
+        servernames = re.findall(r'" data-name=\\"(.*?)\\">(.*?)<',self.serverlist)
+        #helper.show_error_dialog(['',str(servers)])			
+		
+        #serverinfo = servers.find('span', class_='tabs')#['data-name']		
+        #servernames = re.findall(r'data-name="(.*?)">(.*?)<', str(serverinfo))
 		
         #helper.show_error_dialog(['',str(servernames[1][0])])
-		
+        #helper.show_error_dialog(['',str(helper.serverlist)])			
 
         servername_dialog =[]
         for element in servernames:		
             servername_dialog.append(element[1]) #['MyCloud', 'RapidVideo', 'Openload']  
 			
         self.serveridx = helper.present_selection_dialog('Choose the server from the options below', servername_dialog)    
+				        
+        server = re.findall(r'data-name=\\"..\\"\\n(.*?)<\\\/ul>\\n                            <\\\/div>\\n', self.serverlist)		
+        links = re.findall(r'data-base=\\"(.*?)\\"\\n                            data-comment=\\"(.*?)\\"\\n                            \\n                            href=\\"(.*?)">(.*?)<', server[self.serveridx])		
+					
+        for element in links:
+            if (element[1] == self.database): self.serverlink = element[2].replace('\/','/')[0:-1]
+
+        #helper.show_error_dialog(['',str(self.serverlink)])				
 		
-        if (self.serveridx == 0):
-            links_active =	servers.find('div', class_='server active')
-            links1 = links_active.find_all('a')			
-            for link in links1:
-                if (link['data-base'] == self.database): self.serverlist = link['href']
+		
+        #if (self.serveridx == 0):
+        #    links_active =	servers.find('div', class_='server active')
+        #    links1 = links_active.find_all('a')			
+
+        #    for link in links1:
+        #        if (link['data-comment'] == self.database): self.serverlist = link['href']
             #helper.show_error_dialog(['',str(self.serverlist)])				
-        else:
-            links_active =	servers.find_all('div', class_='server hidden')
+        #else:
+        #    links_active =	servers.find_all('div', class_='server hidden')
             #helper.show_error_dialog(['',str(links_active)])
         #    if (self.serveridx == 1):            
-            links1 = links_active[self.serveridx-1].find_all('a')			
-            for link in links1:
-               if (link['data-base'] == self.database): self.serverlist = link['href']	
+        #    links1 = links_active[self.serveridx-1].find_all('a')			
+        #    for link in links1:
+        #       if (link['data-comment'] == self.database): self.serverlist = link['href']	
 		
         #helper.show_error_dialog(['',str(self.serverlist[idx])])			
 
@@ -117,15 +135,15 @@ class QualityPlayer(VideoPlayer):
     def __get_quality_links(self):
         # Grab the API token
 
-        ep_id = self.serverlist.split('/')[-1]        		
+        ep_id = self.serverlink.split('/')[-1]        		
         ts = re.search('ts=\"(.*?)\"',self.html).group(1) 		
         extra_para = self.__get_extra_url_parameter(ep_id, ts, self.serverid)	
         
 		#url = '%s/ajax/episode/info?id=%s&server=%s' % (helper.domain_url(), ep_id, serverid)
         url = '%s/ajax/episode/info?ts=%s&_=%s&id=%s&server=%s' % (helper.domain_url(), ts, extra_para, ep_id, self.serverid)
-	
+        #helper.show_error_dialog(['',str(url)])	
         params_url,e = self.net.get_html(url, self.cookies, helper.domain_url())
-        #helper.show_error_dialog(['',str(url)])
+        #helper.show_error_dialog(['',str(params_url)])	
         ajax_json = {'params' : {'id': '', 'token': '', 'options': ''}, 'type': 'iframe', 'target': ''}
         
         rot8 = re.search('id\"\:\"(.*?)\"',params_url)#.group(1)
@@ -151,6 +169,7 @@ class QualityPlayer(VideoPlayer):
 
         if (ajax_json['type'] == 'iframe') : 
             target = ajax_json['target'].replace('\/','/')
+            #helper.show_error_dialog(['',str(target)])	   
             if not 'http' in target :
                 target = target.replace('//','https://')			
             if 'rapidvideo' in target :
@@ -161,7 +180,7 @@ class QualityPlayer(VideoPlayer):
                 if ( quali_choser != -1):		
                     params_url,e = self.net.get_html('%s&q=' % target + quali[quali_choser], self.cookies, helper.domain_url())				
                     #helper.show_error_dialog(['',str(quali)])	
-                    target = re.search('<source\ssrc=\"([^\"]+)\"\s.+title=\"([^\"]+)\"\s.+?>', params_url).group(1)				
+                    target = re.search('<source\ssrc=\"([^\"]+)\"\s.+title=\"([^\"]+)\"\s.+?>', params_url).group(1) #',\ssrc: \"([^\"]+?)\"' 
                     helper.resolve_url(target)
                 target = ''
             if 'mcloud.to' in target :
@@ -213,12 +232,14 @@ class QualityPlayer(VideoPlayer):
 	#Part from DxCx/plugin.video.9anime taken
 
     def __get_extra_url_parameter(self, id, ts, server):
-        DD = 'iQDWcsGqN'		
+        DD = '0a9de5a4' 
         params = [('id', str(id)), ('ts', str(ts)), ('server', str(server))]
 
         o = self.__s(DD)
+        #helper.show_error_dialog(['',str(o)])		
         for i in params:
             o += self.__s(self.__a(DD + i[0], i[1]))
+        #helper.show_error_dialog(['',str(o)])        
         return o 
 
     def __s(self, t):
@@ -230,7 +251,8 @@ class QualityPlayer(VideoPlayer):
     def __a(self, t, e):
         n = 0
         for i in range(max(len(t), len(e))):
-            n += ord(e[i]) if i < len(e) else 0
-            n += ord(t[i]) if i < len(t) else 0
+            n *= ord(e[i]) if i < len(e) else 8
+            n *= ord(t[i]) if i < len(t) else 8
+        #helper.show_error_dialog(['',str(n)])
         return format(n, 'x')  # convert n to hex string		
 		

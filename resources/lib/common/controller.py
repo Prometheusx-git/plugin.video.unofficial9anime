@@ -25,7 +25,6 @@ from resources.lib.common.helper import helper
 from resources.lib.common.args import args
 from resources.lib.appdata.account import Account
 
-
 class Controller:
     '''
         Top level logic hub - creates top level objects and invokes their methods.
@@ -126,11 +125,13 @@ class Controller:
         helper.start('search')
         search_string = helper.get_user_input('Search for show title')
         if search_string:
-            import urllib
-            url = '%s/search?keyword=%s' % (helper.domain_url(), urllib.quote_plus(search_string))
-            helper.log_debug('Searching for show %s using url %s' % (search_string, url))
-            plugin_url = helper.build_plugin_url({'action':'mediaList', 'value':url})
-            helper.update_page(plugin_url)
+            args.value = '/search?keyword=%s' % (search_string)
+            self.show_media_list()
+            #import urllib
+            #url = '%s/search?keyword=%s' % (helper.domain_url(), urllib.quote_plus(search_string))
+            #helper.log_debug('Searching for show %s using url %s' % (search_string, url))
+            #plugin_url = helper.build_plugin_url({'action':'mediaList', 'value':url})
+            #helper.update_page(plugin_url)
 
         helper.end('search')
 

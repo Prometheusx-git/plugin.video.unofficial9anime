@@ -82,7 +82,7 @@ class MediaList(WebList):
             #pool.wait_completion()
             #helper.show_error_dialog(['',str(mlinks[0])])			
             #helper.show_error_dialog(['',str(self.media_type_list)])		
-            pool = ThreadPool(8) # Sets the pool size to 4			
+            pool = ThreadPool(4) # Sets the pool size to 4			
             pool.map(self.worker, enumerate(mlinks))
             pool.close() 
             pool.join() 			

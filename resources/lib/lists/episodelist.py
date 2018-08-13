@@ -25,6 +25,8 @@ from resources.lib.common.args import args
 from resources.lib.common.helper import helper
 from resources.lib.lists.weblist import WebList
 from resources.lib.lists import medialist
+from bs4 import BeautifulSoup
+import re, xbmcvfs, xbmcgui
 
 
 class EpisodeList(WebList):
@@ -42,7 +44,9 @@ class EpisodeList(WebList):
         self.first_air_date = ''
         self.season = None
         self.num_episodes = 0
+        self.episodes = []		
         self.id = self._get_bookmark_id(self.url)
+        self.serverlist = ''
 
     ''' PUBLIC FUNCTIONS '''
     def parse(self):
@@ -50,64 +54,95 @@ class EpisodeList(WebList):
         if self.soup == None:
             return
 
-        servers = self.soup.find_all('div', class_='widget servers')#server row')
-        #server_names = map(lambda x: x.label.string, servers)       		
-        links_active =	servers[0].find_all('div', class_='server active')
-        links_hidden =	servers[0].find_all('div', class_='server hidden')
-        links1 = links_active[0].find_all('a')
-        links2 = links_hidden[-1].find_all('a')#servers[-2].find_all('a')
-        counter1 = len(links1)
-        counter2 = len(links2)
 
-        if (counter1 > counter2):
-            links = links1		
+        url = '%s/ajax/film/servers/%s' % (helper.domain_url(), self.id)
+        self.serverlist,e = self.net.get_html(url, self.cookies, helper.domain_url())		        
+        xbmcgui.Window(10000).setProperty('serverlist', self.serverlist)
+        #helper.show_error_dialog(['',str(xbmcgui.Window(10000).getProperty('serverlist'))])	
+        #serverlistf = helper.get_profile() + 'serverlist.txt'		
+        #serverlistfile = xbmcvfs.File(serverlistf, 'w')
+        #result = serverlistfile.write(self.serverlist)
+        #serverlistfile.close()
+
+		
+        #servers = re.findall(r'" data-name=\\"(.*?)\\">(.*?)<',params_url)
+
+        #helper.show_error_dialog(['',str(params_url)])	
+        #server_names = map(lambda x: x.label.string, servers)       		
+        #links_active =	servers[0].find_all('div', class_='server active')
+        #links_hidden =	servers[0].find_all('div', class_='server hidden')
+        #links1 = links_active[0].find_all('a')
+        #links = links_hidden[-1].find_all('a')#servers[-2].find_all('a')
+        #counter1 = len(links1)
+        #counter2 = len(links2)
+
+		
+		
+        links = re.findall(r'data-base=\\"(.*?)\\"\\n                            data-comment=\\"(.*?)\\"\\n                            \\n                            href=\\"(.*?)">(.*?)<', self.serverlist)		
+        links_tab=[]
+        counter = 1	
+        for element in links:
+            num = element[0]#['data-base']#.string.strip()
+            url = element[2].replace('\/','/').split('/')[-2]+'!!!!'+element[1]
+            comment	= element[3]	
+            if (counter <= int(element[0])):                 			
+                links_tab.append((num, url, comment))		
+                counter = int(element[0])
+            else: counter = counter + 1				
+
+            #link[2] = link[2].replace('\/','/')#'%s!!!!%s' % (link[2].replace('\/','/').split('/')[-2], link[1]	)			
+        #helper.show_error_dialog(['',str(links_tab)])	
+        #if (counter1 > counter2):
+        #    links = links1		
             #helper.show_error_dialog(['',str(counter1)])			
-        else:
-            links = links2	
+        #else:
+        #    links = links2	
         #helper.show_error_dialog(['',str(links2)])			
-        for link in links:	
-            link['href'] = '%s!!!!%s' % (link['href'].split('/')[-2], link['data-base']	)	
-            #helper.show_error_dialog(['',str(link)])
+        #for link in links:	
+        #    link['href'] = '%s!!!!%s' % (link['href'].split('/')[-2], link['data-comment']	)	
+            #helper.show_error_dialog(['',str(link['href'])])
         #links2 = servers[-1].find_all('a')
         #for link in links2:	
         #    link['href'] = link['href'].split('/')[-2] + '!!!!' + link['data-base']	
 
-        self.links = links			
+        self.episodes = links_tab	
 		
         self._parse_show_metadata()
         self.related_links, self.related_data_tips, self.related_media_type_list = self._parse_links_from_grid()
 
     def add_items(self):
         helper.start('EpisodeList.add_items')
-        if self.links == []:
+        if self.episodes == []:
             return
 
         half_eps = 0
-        episodes = []
-        for link in self.links:
-            num = link['data-base']#.string.strip()
-            url = link['href']
-            if self.__is_half_episode(num): # 1a and 1b
-                half_eps += 1
+        #episodes = []
+        #for link in self.links:
+        #    num = link[0]#['data-base']#.string.strip()
+        #    url = link['href']
+        #    comment	= link[3]	
+        #    if self.__is_half_episode(num): # 1a and 1b
+        #        half_eps += 1
 
-            episodes.append((num, url))
+        #    episodes.append((num, url, comment))
 
-        self.num_episodes = len(episodes)
-
+        self.num_episodes = len(self.episodes)
+	
         helper.log_debug('We have effectively %d episodes with %d half episodes' % (self.num_episodes, half_eps))
 
         all_metadata = self.get_metadata(args.base_title)
         helper.log_debug('We have %d metadata entries' % len(all_metadata))
         offset = -1
-        for idx, (name, url) in enumerate(episodes):
+        #helper.show_error_dialog(['',str(args.tvdb_id)])			
+        for idx, (name, url, comment) in enumerate(self.episodes):
             if self.__is_half_episode(name):
                 offset -= 1
-            metadata = all_metadata[int(name)+offset] if int(name)+offset < len(all_metadata) else {'title':name}
+            metadata = all_metadata[int(name)+offset] if (int(name)+offset) < len(all_metadata) else {'title':'%s - %s' %(comment, name)}
             icon, fanart = self._get_art_from_metadata(metadata)
             query = self._construct_query(url, 'qualityPlayer', metadata, media_type=self.media_type)
             cm_items = self._get_contextmenu_items()
             if helper.get_setting('enable-metadata') == 'true':			
-                metadata['title'] = '%s - %s' % (name, metadata['title'])
+                metadata['title'] = '%s - %s' % (comment, metadata['title'])
             #helper.show_error_dialog(['',str(query)])					
             helper.add_video_item(query, metadata, img=icon, fanart=fanart, contextmenu_items=cm_items)
 
@@ -123,9 +158,11 @@ class EpisodeList(WebList):
         if (helper.get_setting('enable-metadata') == 'false' or 
             (args.imdb_id == None and args.tvdb_id == None)):
             return []
-        
+        #Test if better results with no date
+        #self.first_air_date	= ''	
         all_metadata = self.meta.get_episodes_meta(name, args.imdb_id, args.tvdb_id, self.num_episodes,
                                                    self.first_air_date, self.season)
+        #helper.show_error_dialog(['',str(self.season)])														   
         return all_metadata
 
     ''' PROTECTED FUNCTIONS '''
