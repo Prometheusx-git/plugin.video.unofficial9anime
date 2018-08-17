@@ -173,7 +173,9 @@ class QualityPlayer(VideoPlayer):
             if not 'http' in target :
                 target = target.replace('//','https://')			
             if 'rapidvideo' in target :
-                params_url,e = self.net.get_html( '%s&q=360p' % target, self.cookies, helper.domain_url())
+                target = target.replace('www.rapidvideo.com/e/','www.rapidvideo.com/?v=')                			
+                params_url,e = self.net.get_html( target, self.cookies, helper.domain_url())				
+                #params_url,e = self.net.get_html( '%s&q=360p' % target, self.cookies, helper.domain_url())
                 quali = re.findall(r'&q=(.*?)"',params_url)
                 quali = quali[::-1]				
                 quali_choser = helper.present_selection_dialog('Choose the quality from the options below', quali) 
