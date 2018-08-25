@@ -234,7 +234,7 @@ class QualityPlayer(VideoPlayer):
 	#Part from DxCx/plugin.video.9anime taken
 
     def __get_extra_url_parameter(self, id, ts, server):
-        DD = '0a9de5a4' 
+        DD = 'e7b83f76' 
         params = [('id', str(id)), ('ts', str(ts)), ('server', str(server))]
 
         o = self.__s(DD)

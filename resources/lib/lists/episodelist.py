@@ -54,8 +54,11 @@ class EpisodeList(WebList):
         if self.soup == None:
             return
 
-
-        url = '%s/ajax/film/servers/%s' % (helper.domain_url(), self.id)
+        ts = re.search('ts=\"(.*?)\"',self.html).group(1) 		
+        extra_para = self.__get_extra_url_parameter(self.id, ts, 1)				
+        #helper.show_error_dialog(['',str(extra_para)])				
+	
+        url = '%s/ajax/film/servers/%s?ts=%s&_=%s&id=%s&random=1' % (helper.domain_url(), self.id, ts, extra_para, self.id)
         self.serverlist,e = self.net.get_html(url, self.cookies, helper.domain_url())		        
         xbmcgui.Window(10000).setProperty('serverlist', self.serverlist)
         #helper.show_error_dialog(['',str(xbmcgui.Window(10000).getProperty('serverlist'))])	
@@ -243,4 +246,30 @@ class EpisodeList(WebList):
     def __is_half_episode(self, name):
         import re
         is_half = re.search('([0-9]{1,3}-[Bb])$', name) != None
-        return is_half
+        return is_half		
+		
+    def __get_extra_url_parameter(self, id, ts, server):
+        DD = 'e7b83f76' #'0a9de5a4' 
+        params = [('id', str(id)), ('ts', str(ts)), ('random', str(server))]
+
+        o = self.__s(DD)
+        #helper.show_error_dialog(['',str(o)])		
+        for i in params:
+            o += self.__s(self.__a(DD + i[0], i[1]))
+        #helper.show_error_dialog(['',str(o)])        
+        return o 
+
+    def __s(self, t):
+        i = 0
+        for (e, c) in enumerate(t):
+            i += ord(c) + e 
+        return i
+
+    def __a(self, t, e):
+        n = 0
+        for i in range(max(len(t), len(e))):
+            n *= ord(e[i]) if i < len(e) else 8
+            n *= ord(t[i]) if i < len(t) else 8
+        #helper.show_error_dialog(['',str(n)])
+        return format(n, 'x')  # convert n to hex string		
+		
