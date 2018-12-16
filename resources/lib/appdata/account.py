@@ -147,7 +147,7 @@ class Account(object):
 
 		
     def __get_extra_url_parameter(self, params):
-        DD = 'iQDWcsGqN'		
+        DD = '2e4e243c'#'e7b83f76' #'iQDWcsGqN'		
         #params = [('username', str(username)), ('password', str(password)),('remember', '1'), ('ts', str(ts))]
         o = self.__s(DD)
         for i in params:
@@ -163,6 +163,6 @@ class Account(object):
     def __a(self, t, e):
         n = 0
         for i in range(max(len(t), len(e))):
-            n += ord(e[i]) if i < len(e) else 0
-            n += ord(t[i]) if i < len(t) else 0
+            n *= ord(e[i]) if i < len(e) else 6
+            n *= ord(t[i]) if i < len(t) else 6
         return format(n, 'x')  # convert n to hex string		
