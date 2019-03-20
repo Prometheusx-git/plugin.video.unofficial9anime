@@ -57,7 +57,8 @@ class EpisodeList(WebList):
         ts = re.search('ts=\"(.*?)\"',self.html).group(1) 		
         extra_para = self.__get_extra_url_parameter(self.id, ts, 1)				
         #helper.show_error_dialog(['',str(extra_para)])				
-	
+
+		
         url = '%s/ajax/film/servers/%s?ts=%s&_=%s&id=%s&random=1' % (helper.domain_url(), self.id, ts, extra_para, self.id)
         self.serverlist,e = self.net.get_html(url, self.cookies, helper.domain_url())		        
         xbmcgui.Window(10000).setProperty('serverlist', self.serverlist)
@@ -82,16 +83,17 @@ class EpisodeList(WebList):
 		
 		
         links = re.findall(r'data-base=\\"(.*?)\\"\\n                            data-comment=\\"(.*?)\\"\\n                            \\n                            href=\\"(.*?)">(.*?)<', self.serverlist)		
-        links_tab=[]
+        links_tab=[]	
         counter = 1	
         for element in links:
             num = element[0]#['data-base']#.string.strip()
             url = element[2].replace('\/','/').split('/')[-2]+'!!!!'+element[1]
-            comment	= element[3]	
+            comment	= element[3]
+            #helper.show_error_dialog(['',str(counter)+' '+str(element[0])])			
             if (counter <= int(element[0])):                 			
                 links_tab.append((num, url, comment))		
                 counter = int(element[0])
-            else: counter = counter + 1				
+            #else: counter = counter + 1				
 
             #link[2] = link[2].replace('\/','/')#'%s!!!!%s' % (link[2].replace('\/','/').split('/')[-2], link[1]	)			
         #helper.show_error_dialog(['',str(links_tab)])	
@@ -249,7 +251,7 @@ class EpisodeList(WebList):
         return is_half		
 		
     def __get_extra_url_parameter(self, id, ts, server):
-        DD = 'e7b83f76' #'0a9de5a4' 
+        DD = '2e4e243c' #'e7b83f76' #'0a9de5a4' 
         params = [('id', str(id)), ('ts', str(ts)), ('random', str(server))]
 
         o = self.__s(DD)
