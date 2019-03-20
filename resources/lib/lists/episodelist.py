@@ -84,13 +84,13 @@ class EpisodeList(WebList):
 		
         links = re.findall(r'data-base=\\"(.*?)\\"\\n                            data-comment=\\"(.*?)\\"\\n                            \\n                            href=\\"(.*?)">(.*?)<', self.serverlist)		
         links_tab=[]	
-        counter = 1	
+        counter = 0	
         for element in links:
             num = element[0]#['data-base']#.string.strip()
             url = element[2].replace('\/','/').split('/')[-2]+'!!!!'+element[1]
             comment	= element[3]
             #helper.show_error_dialog(['',str(counter)+' '+str(element[0])])			
-            if (counter <= int(element[0])):                 			
+            if (counter < int(element[0])):                 			
                 links_tab.append((num, url, comment))		
                 counter = int(element[0])
             #else: counter = counter + 1				
